@@ -450,6 +450,7 @@ impl Update {
             let proxy = reqwest::Proxy::all(proxy.as_str())?;
             request = request.proxy(proxy);
         }
+        println!("Downloading from: {}", self.download_url);
         let response = request
             .build()?
             .get(self.download_url.clone())
@@ -458,6 +459,7 @@ impl Update {
             .await?;
 
         if !response.status().is_success() {
+            println!("Download request failed with status: {}", response.status());
             return Err(Error::Network(format!(
                 "Download request failed with status: {}",
                 response.status()
@@ -469,6 +471,7 @@ impl Update {
             .get("Content-Length")
             .and_then(|value| value.to_str().ok())
             .and_then(|value| value.parse().ok());
+        println!("Content-Length: {:?}", content_length);
 
         let mut buffer = Vec::new();
 
